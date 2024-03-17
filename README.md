@@ -30,3 +30,8 @@ CI stands for Continuous Integration and CD stands for Continuous Delivery/Deplo
    
 ### Step 8 - 
    Here comes the main character of our pipeline i.e., Argo CD. It is responsible for maintaining state between the manifests folder and the kubernetes cluster on which the application is deployed. Argo CD uses the manifests as the single source of truth and enables proper deployment of the application and maintentance of the kubernetes cluster-infrastructure.
+
+### Step 9 -
+   Finally, Argo CD deploys the application on to the kubernetes cluster and application will be running on 2 pods as specified in `deployment.yml`
+
+   
