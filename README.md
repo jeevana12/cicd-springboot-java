@@ -14,9 +14,19 @@ CI stands for Continuous Integration and CD stands for Continuous Delivery/Deplo
 ### Step 3 - 
   Use Maven targets i.e., `maven clean package` to build the java application on the Docker image chosen as agent(complete pipeline is executed on this Docker Image). But don't have to install since Maven is pre-installed on the Docker Image.
   
-Step 4 - Now, install SonarQube to perform static code ananlysis, code scanning and checking for vulnerabilities. If any of the tests failed, configure Jenkins plug-ins to send out alerts/notifications.
-Step 5 - If the previous stage is passed, build the Docker Image of this applicationa and push the image to any docker regisrtries like DockerHub, ECR etc.
+### Step 4 - 
+   Now, install SonarQube to perform static code ananlysis, code scanning and checking for vulnerabilities. If any of the tests failed, configure Jenkins plug-ins to send out alerts/notifications.
+   
+### Step 5 - 
+   If the previous stage is passed, build the Docker Image of this applicationa and push the image to any docker regisrtries like DockerHub, ECR etc.
+   
 ------------------This marks the end of Continuous Integration--------------------------
-Step 6 - Now that we have the final image in the registry, we need to monitor it constantly for changes and this can be done using a shell-script or Argo Image Updator. I have used a shell-script here. Ansible, which is a configuration management tool can be used too, but it doesn't have the ability to constantly monitor.
-Step 7 - Whenever there is a change in the image in the registry, the shell-script catches it and updates the manifests repository, which is `deployment.yml` in this project. This new commit made to this manifests repo, keeps the image updated.
-Step 8 - Here comes the main character of our pipeline i.e., Argo CD. It is responsible for maintaining state between the manifests folder and the kubernetes cluster on which the application is deployed. Argo CD uses the manifests as the single source of truth and enables proper deployment of the application and maintentance of the kubernetes cluster-infrastructure.
+
+### Step 6 - 
+   Now that we have the final image in the registry, we need to monitor it constantly for changes and this can be done using a shell-script or Argo Image Updator. I have used a shell-script here. Ansible, which is a configuration management tool can be used too, but it doesn't have the ability to constantly monitor.
+   
+### Step 7 - 
+   Whenever there is a change in the image in the registry, the shell-script catches it and updates the manifests repository, which is `deployment.yml` in this project. This new commit made to this manifests repo, keeps the image updated.
+   
+### Step 8 - 
+   Here comes the main character of our pipeline i.e., Argo CD. It is responsible for maintaining state between the manifests folder and the kubernetes cluster on which the application is deployed. Argo CD uses the manifests as the single source of truth and enables proper deployment of the application and maintentance of the kubernetes cluster-infrastructure.
