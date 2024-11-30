@@ -1,37 +1,81 @@
-# Complete CI/CD pipeline for a Java application, using Maven, SonarQube, Argo CD, Docker and Kubernetes
+# End to End CI/CD implementation for Java based application using maven,Sonarqube, Argocd,Helm,Kubernetes
 
-![image](https://github.com/RachanaVenkat/java-app-cicd/assets/151712438/df08e8f3-a2e1-4c0b-b99c-588801983055)
+![image](https://github.com/user-attachments/assets/d937dde7-c401-48a0-ac6b-a55da0b2094a)
 
-CI stands for Continuous Integration and CD stands for Continuous Delivery/Deployment. It is the process of automating the integration of code changes from different sources to a single codebase and testing if it is deployable, followed by deploying for the end-users.
+A CI/CD pipeline automates the process of integrating code changes (Continuous Integration) and deploying them to production (Continuous Deployment/Delivery).
 
-## Here's the detailed explanation of the entire pipeline:
-### Step 1 - 
-   Checking out the code from SCM, it is this repo in my project
+### Jenkins Integration for CI/CD:
+CI (Continuous Integration): Jenkins automates code building and testing when changes are pushed to a repository.
 
-### Step 2 - 
-  Either configure GitHub webhooks or directly provide this repo as the script path in Jenkins for triggering the Jenkins pipeline to begin the process to automatic building and testing.
-  
-### Step 3 - 
-  Use Maven targets i.e., `maven clean package` to build the java application on the Docker image chosen as agent(complete pipeline is executed on this Docker Image). But don't have to install since Maven is pre-installed on the Docker Image.
-  
-### Step 4 - 
-   Now, install SonarQube to perform static code ananlysis, code scanning and checking for vulnerabilities. If any of the tests failed, configure Jenkins plug-ins to send out alerts/notifications.
-   
-### Step 5 - 
-   If the previous stage is passed, build the Docker Image of this applicationa and push the image to any docker regisrtries like DockerHub, ECR etc.
-   
-------------------This marks the end of Continuous Integration--------------------------
+CD (Continuous Deployment): Jenkins triggers deployment pipelines by integrating plugins like Kubernetes, Argocd,Argo image updater pushing changes to production environments.
 
-### Step 6 - 
-   Now that we have the final image in the registry, we need to monitor it constantly for changes and this can be done using a shell-script or Argo Image Updator. I have used a shell-script here. Ansible, which is a configuration management tool can be used too, but it doesn't have the ability to constantly monitor.
-   
-### Step 7 - 
-   Whenever there is a change in the image in the registry, the shell-script catches it and updates the manifests repository, which is `deployment.yml` in this project. This new commit made to this manifests repo, keeps the image updated.
-   
-### Step 8 - 
-   Here comes the main character of our pipeline i.e., Argo CD. It is responsible for maintaining state between the manifests folder and the kubernetes cluster on which the application is deployed. Argo CD uses the manifests as the single source of truth and enables proper deployment of the application and maintentance of the kubernetes cluster-infrastructure.
+#### Steps to seamlessly implement a pipeline for a Java application:
 
-### Step 9 -
-   Finally, Argo CD deploys the application on to the kubernetes cluster and application will be running on 2 pods as specified in `deployment.yml`
+## CI PROCESS:
+
+### 1. Set Up Source Control:
+   Use GitHub, GitLab, or Bitbucket to host the Java application code.
+### 2. ways of Configuring Trigger for Jenkins Pipeline:
+-- Poll SCM: Enable Poll SCM and set a cron-like schedule to check for changes or go for
+
+-- Git Webhook: Configure a webhook in your Git repository
+
+-- Create jenkins file to define the pipeline and When setting up a build in Jenkins, directly supply the jenkins script path so that it triggers pipeline.
+### 3. Build automation: 
+ Since we're using Docker as the agent to run the entire pipeline process inside the container, Maven is already configured within the Docker image, eliminating the need for separate installation. Therefore, we can directly add the Maven build steps to compile and package the application (e.g.,` mvn clean package`).
+### 4. Code Quality Checks:
+Integrate tools such as SonarQube for static code analysis and detecting code vulnerabilities. Additionally, ensure Jenkins is authenticated with SonarQube by providing the necessary credentials.
+### 5. Containerization:
+Build Docker images using a Dockerfile and push the image to a Docker registry. Provide the necessary credentials to Jenkins for accessing the registry.
+
+## CD PROCESS:
+Here's how Jenkins invokes CD: 
+### Updating deployment files:
+ After a successful build, test, and artifact creation in Jenkins, deployment can be triggered using various tools like Shell Scripting, Image Updater, or Ansible. In this case, Shell Script is used, where once the image is pushed to the Docker registry, it continuously monitors the registry and updates the Git repository with the new version in the manifest files.
+### Deploying it on k8 :
+ So, next start the cluster and deploy argocd controller using operators or through helm charts. I have deployed the Argo CD controller using Helm charts. It ensures that the state between the manifests folder and the Kubernetes cluster is maintained. Whenever a change is committed to the manifest files, Argo CD automatically deploys the updated configuration to the Kubernetes cluster. 
+  Finally, Argo CD deploys the application on to the kubernetes cluster and application will be running on 2 pods as specified in deployment.yml
+
+
+
+
+
+A CI/CD pipeline automates the process of integrating code changes (Continuous Integration) and deploying them to production (Continuous Deployment/Delivery).
+
+### Jenkins Integration for CI/CD:
+CI (Continuous Integration): Jenkins automates code building and testing when changes are pushed to a repository.
+
+CD (Continuous Deployment): Jenkins triggers deployment pipelines by integrating plugins like Kubernetes, Argocd,Argo image updater pushing changes to production environments.
+
+#### Steps to seamlessly implement a pipeline for a Java application:
+
+## CI PROCESS:
+
+### 1. Set Up Source Control:
+   Use GitHub, GitLab, or Bitbucket to host the Java application code.
+### 2. ways of Configuring Trigger for Jenkins Pipeline:
+-- Poll SCM: Enable Poll SCM and set a cron-like schedule to check for changes or go for
+
+-- Git Webhook: Configure a webhook in your Git repository
+
+-- Create jenkins file to define the pipeline and When setting up a build in Jenkins, directly supply the jenkins script path so that it triggers pipeline.
+### 3. Build automation: 
+ Since we're using Docker as the agent to run the entire pipeline process inside the container, Maven is already configured within the Docker image, eliminating the need for separate installation. Therefore, we can directly add the Maven build steps to compile and package the application (e.g.,` mvn clean package`).
+### 4. Code Quality Checks:
+Integrate tools such as SonarQube for static code analysis and detecting code vulnerabilities. Additionally, ensure Jenkins is authenticated with SonarQube by providing the necessary credentials.
+### 5. Containerization:
+Build Docker images using a Dockerfile and push the image to a Docker registry. Provide the necessary credentials to Jenkins for accessing the registry.
+
+## CD PROCESS:
+Here's how Jenkins invokes CD: 
+### Updating deployment files:
+ After a successful build, test, and artifact creation in Jenkins, deployment can be triggered using various tools like Shell Scripting, Image Updater, or Ansible. In this case, Shell Script is used, where once the image is pushed to the Docker registry, it continuously monitors the registry and updates the Git repository with the new version in the manifest files.
+### Deploying it on k8 :
+ So, next start the cluster and deploy argocd controller using operators or through helm charts. I have deployed the Argo CD controller using Helm charts. It ensures that the state between the manifests folder and the Kubernetes cluster is maintained. Whenever a change is committed to the manifest files, Argo CD automatically deploys the updated configuration to the Kubernetes cluster. 
+  Finally, Argo CD deploys the application on to the kubernetes cluster and application will be running on 2 pods as specified in deployment.yml
+
+
+
+
 
    
